@@ -1,65 +1,123 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { Wind, Sun, Sunrise, Sunset, MapPin, AlertTriangle } from "lucide-react";
+import { useGeolocation } from "@/hooks/useGeolocation";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import WeatherCard from "@/components/dashboard/WeatherCard";
+import StatCard from "@/components/dashboard/StatCard";
+import GlassCard from "@/components/common/GlassCard";
+import Link from "next/link";
+import { SECTIONS } from "@/lib/sections";
+
+function uvLabel(uv: number) {
+  if (uv < 3) return "Low";
+  if (uv < 6) return "Moderate";
+  if (uv < 8) return "High";
+  if (uv < 11) return "Very High";
+  return "Extreme";
+}
+
+function aqiColor(aqi: number) {
+  if (aqi <= 50) return "#30D158";
+  if (aqi <= 100) return "#FFD60A";
+  if (aqi <= 150) return "#FF9F0A";
+  if (aqi <= 200) return "#FF453A";
+  return "#BF5AF2";
+}
+
+function formatTime(iso: string) {
+  return new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
+export default function DashboardPage() {
+  const { location, error: geoError, permissionDenied, refresh } = useGeolocation();
+  const { weather, airQuality, loading, error, stale } = useDashboardData(location);
+
+  const cityLabel = location ? [location.city, location.country].filter(Boolean).join(", ") : undefined;
+  const quickLinks = SECTIONS.filter((s) => s.slug !== "");
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="px-4 pt-4">
+      <div className="mb-4 flex items-center gap-2 text-sm text-muted">
+        <MapPin size={14} />
+        {cityLabel ?? "Detecting your location…"}
+      </div>
+
+      {permissionDenied && (
+        <GlassCard className="mb-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle size={18} className="mt-0.5 text-warning" />
+            <div className="flex-1">
+              <p className="text-sm font-medium">Location access needed</p>
+              <p className="text-xs text-muted">
+                Enable location in Settings → Safari → Location to personalize your dashboard.
+              </p>
+            </div>
+            <button onClick={refresh} className="rounded-full bg-accent px-3 py-1.5 text-xs font-medium text-white">
+              Retry
+            </button>
+          </div>
+        </GlassCard>
+      )}
+
+      {!permissionDenied && geoError && (
+        <p className="mb-4 text-xs text-warning">{geoError}</p>
+      )}
+
+      {stale && <p className="mb-3 text-xs text-warning">Showing last saved data — couldn&apos;t refresh.</p>}
+
+      {error && !weather && <p className="mb-4 text-sm text-danger">{error}</p>}
+
+      {loading && !weather ? (
+        <div className="grid grid-cols-2 gap-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="glass h-28 animate-pulse rounded-2xl" />
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+      ) : (
+        weather && (
+          <div className="grid grid-cols-2 gap-3">
+            <WeatherCard weather={weather} city={cityLabel} />
+            {airQuality && (
+              <StatCard
+                icon={Wind}
+                label="Air Quality (AQI)"
+                value={String(airQuality.aqi)}
+                hint={airQuality.category}
+                accentColor={aqiColor(airQuality.aqi)}
+              />
+            )}
+            <StatCard
+              icon={Sun}
+              label="UV Index"
+              value={weather.uvIndex.toFixed(1)}
+              hint={uvLabel(weather.uvIndex)}
+              accentColor="#FF9F0A"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <StatCard icon={Sunrise} label="Sunrise" value={formatTime(weather.sunrise)} accentColor="#FFD60A" />
+            <StatCard icon={Sunset} label="Sunset" value={formatTime(weather.sunset)} accentColor="#FF453A" />
+          </div>
+        )
+      )}
+
+      <h2 className="mb-3 mt-7 text-sm font-semibold text-muted">Everything else</h2>
+      <div className="grid grid-cols-3 gap-3 pb-4">
+        {quickLinks.map((section) => (
+          <Link
+            key={section.slug}
+            href={`/${section.slug}`}
+            className="glass flex flex-col items-center gap-2 rounded-2xl px-2 py-4 text-center"
           >
-            Documentation
-          </a>
-        </div>
-      </main>
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-xl text-white"
+              style={{ backgroundColor: section.color }}
+            >
+              <section.icon size={18} />
+            </div>
+            <span className="text-[11px] font-medium leading-tight">{section.title}</span>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

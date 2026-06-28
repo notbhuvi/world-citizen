@@ -1,26 +1,74 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f2f4f8;
+  --foreground: #0a0a0c;
+  --surface: 255 255 255;
+  --surface-alpha: 0.6;
+  --border-alpha: 0.5;
+  --accent: #0a84ff;
+  --accent-2: #5e5ce6;
+  --success: #30d158;
+  --warning: #ff9f0a;
+  --danger: #ff453a;
+  --muted: #6e6e76;
+}
+
+[data-theme="dark"] {
+  --background: #05060a;
+  --foreground: #f5f5f7;
+  --surface: 28 28 32;
+  --surface-alpha: 0.55;
+  --border-alpha: 0.12;
+  --muted: #98989f;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-muted: var(--muted);
+  --font-sans: var(--font-sans);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
+html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+.glass {
+  background: rgba(var(--surface), var(--surface-alpha));
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(127, 127, 127, var(--border-alpha));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .glass {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
