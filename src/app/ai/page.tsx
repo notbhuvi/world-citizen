@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Send, Mic, Volume2, KeyRound, Bot, User } from "lucide-react";
+import { Send, Mic, Volume2, KeyRound, Bot, User, ArrowUpRight, ChevronRight } from "lucide-react";
 import SectionShell from "@/components/common/SectionShell";
 import GlassCard from "@/components/common/GlassCard";
 import { getSetting, setSetting } from "@/lib/db";
 import { askAssistant, type AiMessage } from "@/lib/aiClient";
 import { getSection } from "@/lib/sections";
+import { useAiApp } from "@/components/layout/AiAppProvider";
 
 export default function AiPage() {
   const meta = getSection("ai")!;
+  const { selectedApp, research, openPicker } = useAiApp();
   const [messages, setMessages] = useState<AiMessage[]>([]);
   const [input, setInput] = useState("");
   const [apiKey, setApiKey] = useState("");
@@ -82,6 +84,17 @@ export default function AiPage() {
 
   return (
     <SectionShell title={meta.title} description={meta.description} icon={meta.icon} color={meta.color}>
+      <button
+        onClick={openPicker}
+        className="glass mb-4 flex w-full items-center justify-between rounded-2xl px-3.5 py-3 text-left"
+      >
+        <span className="flex items-center gap-2 text-sm">
+          <Bot size={16} className="text-accent" />
+          Research app: <span className="font-medium">{selectedApp?.name ?? "Not chosen"}</span>
+        </span>
+        <ChevronRight size={16} className="text-muted" />
+      </button>
+
       {showKeyInput && (
         <GlassCard className="mb-4">
           <div className="mb-2 flex items-center gap-2 text-sm font-medium">
@@ -110,7 +123,8 @@ export default function AiPage() {
       <div className="mb-4 space-y-3">
         {messages.length === 0 && (
           <p className="text-sm text-muted">
-            Ask me about local rules, plan a trip, explain a document, or just tap the mic to speak.
+            Ask me about local rules, plan a trip, explain a document, tap the mic to speak, or send a question
+            straight to {selectedApp?.name ?? "your AI app"} with the arrow button.
           </p>
         )}
         {messages.map((m, i) => (
@@ -154,6 +168,13 @@ export default function AiPage() {
             placeholder="Ask anything…"
             className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted"
           />
+          <button
+            onClick={() => research(input || undefined)}
+            aria-label={`Open in ${selectedApp?.name ?? "AI app"}`}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-muted"
+          >
+            <ArrowUpRight size={18} />
+          </button>
           <button onClick={send} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-white">
             <Send size={16} />
           </button>

@@ -22,8 +22,8 @@ This build intentionally has **no server and no cloud account**. All personal da
 | Health, Shopping, Food, Education, Housing | ✅ Live | Same Overpass nearby-places engine, category-filtered, same map-app chooser |
 | Finance (currency, EMI, salary/tax calculators) | ✅ Live | Frankfurter API (keyless) + local calculators |
 | Calendar (public holidays) | ✅ Live | Nager.Date API, keyless |
-| Government, Jobs, Travel, Utilities, Laws | ✅ Live, guided | Curated topic lists with "find official source" deep links — these areas legally differ by country/region, so the app points you to authoritative sources rather than guessing facts |
-| AI Assistant | ⚙️ Voice search & text-to-speech work with no setup. Conversational AI needs your own Anthropic API key (entered locally, stored only on your device) |
+| Government, Jobs, Travel, Utilities, Laws | ✅ Live, guided | Curated topic lists, each with an "Ask [your AI app]" handoff button plus a plain web-search fallback — these areas legally differ by country/region, so the app points you to authoritative sources rather than guessing facts |
+| AI Assistant | ✅ Live | On first launch, the app asks which AI app you already use (ChatGPT, Claude, Gemini, Perplexity, or Copilot) and remembers it. Research buttons throughout the app hand off your question to that app via a deep link. Voice search and text-to-speech work with no setup; an optional in-app chat is also available if you add your own Anthropic API key |
 
 ## Tech stack
 
