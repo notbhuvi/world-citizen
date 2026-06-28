@@ -15,6 +15,7 @@ export default function CalendarPage() {
   const [holidays, setHolidays] = useState<PublicHoliday[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [unsupportedCountry, setUnsupportedCountry] = useState(false);
 
   useEffect(() => {
     if (!location?.countryCode) return;
@@ -23,14 +24,17 @@ export default function CalendarPage() {
 
     (async () => {
       setLoading(true);
+      setError(null);
+      setUnsupportedCountry(false);
       const cached = await getCache<PublicHoliday[]>(key, 1000 * 60 * 60 * 24);
       if (cached) setHolidays(cached);
       try {
         const data = await fetchPublicHolidays(year, location.countryCode!);
         setHolidays(data);
+        setUnsupportedCountry(data.length === 0);
         await setCache(key, data);
       } catch {
-        if (!cached) setError("Couldn't load holidays for your country.");
+        if (!cached) setError("Couldn't load holidays — check your connection and try again.");
       } finally {
         setLoading(false);
       }
@@ -61,7 +65,13 @@ export default function CalendarPage() {
         ))}
       </div>
 
-      {!loading && upcoming.length === 0 && location?.countryCode && (
+      {!loading && !error && unsupportedCountry && location?.country && (
+        <p className="text-sm text-muted">
+          We don&apos;t have holiday data for {location.country} from our current source yet.
+        </p>
+      )}
+
+      {!loading && !error && !unsupportedCountry && upcoming.length === 0 && location?.country && (
         <p className="text-sm text-muted">No more public holidays this year for {location.country}.</p>
       )}
     </SectionShell>
