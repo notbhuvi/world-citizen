@@ -2,7 +2,11 @@
 
 **Everything a person needs to know anywhere in the world.**
 
-A local-first Progressive Web App (PWA) that detects your location and surfaces weather, air quality, health, emergency, finance, travel, and civic information for wherever you are. No backend, no account, no app store — everything runs on your iPhone via Safari → Add to Home Screen, with data cached on-device for offline use.
+A local-first Progressive Web App (PWA) that detects your location and surfaces weather, air quality, health, emergency, finance, travel, and civic information for wherever you are. No backend, no account, no app store — install it on your iPhone via Safari → Add to Home Screen, and all personal data (bookmarks, settings, cached responses) stays on-device for offline use.
+
+**Live URL:** https://notbhuvi.github.io/world-citizen/
+
+The app is statically hosted on GitHub Pages (free, just serves files — no server, no database) so it works over mobile data or any Wi-Fi without your computer running anything.
 
 ## Why local-first
 
@@ -14,8 +18,8 @@ This build intentionally has **no server and no cloud account**. All personal da
 |---|---|---|
 | Dashboard (weather, AQI, UV, sunrise/sunset) | ✅ Live | Open-Meteo, keyless |
 | Emergency (SOS, share location, helplines) | ✅ Live | Browser Geolocation + Web Share API + built-in country number dataset |
-| Maps & Nearby | ✅ Live | OpenStreetMap / Overpass API, keyless |
-| Health, Shopping, Food, Education, Housing | ✅ Live | Same Overpass nearby-places engine, category-filtered |
+| Maps & Nearby | ✅ Live | OpenStreetMap / Overpass API, keyless. Tapping a place opens a chooser to navigate in Apple Maps, Google Maps, or Waze — whichever you pick |
+| Health, Shopping, Food, Education, Housing | ✅ Live | Same Overpass nearby-places engine, category-filtered, same map-app chooser |
 | Finance (currency, EMI, salary/tax calculators) | ✅ Live | Frankfurter API (keyless) + local calculators |
 | Calendar (public holidays) | ✅ Live | Nager.Date API, keyless |
 | Government, Jobs, Travel, Utilities, Laws | ✅ Live, guided | Curated topic lists with "find official source" deep links — these areas legally differ by country/region, so the app points you to authoritative sources rather than guessing facts |
@@ -30,22 +34,20 @@ This build intentionally has **no server and no cloud account**. All personal da
 - Leaflet + OpenStreetMap tiles for maps
 - No backend, no database server, no deployment target
 
-## Getting started
+## Getting started (local development)
 
 ```bash
 npm install
 npm run dev          # http://localhost:3000
 ```
 
-## Testing on your iPhone (Add to Home Screen)
+## Installing on your iPhone
 
-See [SETUP.md](./SETUP.md) for the full walkthrough — you need HTTPS on your LAN for the service worker and geolocation to work on a real device (iOS only allows these on `localhost` or a secure `https://` origin).
+1. Open **https://notbhuvi.github.io/world-citizen/** in Safari on your iPhone.
+2. Tap the **Share** icon → **Add to Home Screen** → **Add**.
+3. Launch it from your Home Screen. From then on it works over mobile data or any Wi-Fi, fully independent of any computer.
 
-```bash
-npm run lan           # serves https://<your-mac-lan-ip>:3000
-```
-
-Then on your iPhone: Safari → open that URL → accept the self-signed certificate warning once → Share → **Add to Home Screen**.
+Pushing to `main` redeploys automatically via the GitHub Actions workflow in `.github/workflows/deploy.yml`.
 
 ## Documentation
 

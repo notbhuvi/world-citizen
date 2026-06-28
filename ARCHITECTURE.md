@@ -2,7 +2,7 @@
 
 ## Overview
 
-World Citizen is a **client-only PWA**. There is no application server, no database server, and no deployment target — every screen renders from data fetched directly from public, keyless APIs and from the device's own IndexedDB store.
+World Citizen is a **client-only PWA**. There is no application server and no database server — every screen renders from data fetched directly from public, keyless APIs and from the device's own IndexedDB store. The only server-side component is GitHub Pages, which serves the static build files (HTML/CSS/JS) over a permanent HTTPS URL — it runs no application logic and stores no user data.
 
 ```
 ┌─────────────────────────────── iPhone (Safari / Home Screen PWA) ───────────────────────────────┐
@@ -35,7 +35,7 @@ World Citizen is a **client-only PWA**. There is no application server, no datab
 
 1. **Location** (`src/hooks/useGeolocation.ts`) — browser `navigator.geolocation`, reverse-geocoded via BigDataCloud, cached in IndexedDB so the app still shows your last known city when offline or denied.
 2. **Dashboard data** (`src/hooks/useDashboardData.ts`) — fetches weather + air quality from Open-Meteo keyed off lat/lon, cached in IndexedDB, served stale-while-revalidate by the service worker as a second layer.
-3. **Nearby places** (`src/components/common/NearbyFinder.tsx`) — a single generic component, parameterized by OSM tag presets (`src/lib/api/overpass.ts`), reused across Maps, Health, Shopping, Food, Education, Housing, and Travel. This is why those sections are fully live rather than placeholders.
+3. **Nearby places** (`src/components/common/NearbyFinder.tsx`) — a single generic component, parameterized by OSM tag presets (`src/lib/api/overpass.ts`), reused across Maps, Health, Shopping, Food, Education, Housing, and Travel. This is why those sections are fully live rather than placeholders. Tapping a place's pin icon opens `MapAppChooser` (`src/components/common/MapAppChooser.tsx`), which lets the user pick Apple Maps, Google Maps, or Waze — built from universal links (`src/lib/mapApps.ts`) that work whether or not the chosen app is installed, since there's no web API to detect installed native apps.
 4. **Bookmarks** — every bookmarkable item writes a `BookmarkRecord` to the `bookmarks` IndexedDB store; the `/bookmarks` page reads it back.
 5. **AI Assistant** — voice input/output uses on-device Web Speech APIs (no key, no network call for STT/TTS). Text chat calls the Anthropic Messages API directly from the browser using a key the user pastes into Settings, stored only in IndexedDB.
 
