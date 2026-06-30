@@ -1,12 +1,14 @@
 "use client";
 
 import { Wind, Sun, Sunrise, Sunset, MapPin, AlertTriangle, RefreshCw } from "lucide-react";
+import { motion } from "framer-motion";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import WeatherCard from "@/components/dashboard/WeatherCard";
 import StatCard from "@/components/dashboard/StatCard";
 import AbroadCard from "@/components/dashboard/AbroadCard";
 import GlassCard from "@/components/common/GlassCard";
+import { StaggerGroup, StaggerItem } from "@/components/common/Stagger";
 import Link from "next/link";
 import { SECTIONS } from "@/lib/sections";
 
@@ -121,24 +123,28 @@ export default function DashboardPage() {
         </button>
       )}
 
-      <h2 className="mb-3 mt-7 text-sm font-semibold text-muted">Everything else</h2>
-      <div className="grid grid-cols-3 gap-3 pb-4">
+      <h2 className="font-handwritten mb-2 mt-7 text-xl font-bold">Everything else ✨</h2>
+      <StaggerGroup className="grid grid-cols-3 gap-3 pb-4">
         {quickLinks.map((section) => (
-          <Link
-            key={section.slug}
-            href={`/${section.slug}`}
-            className="glass flex flex-col items-center gap-2 rounded-2xl px-2 py-4 text-center"
-          >
-            <div
-              className="flex h-10 w-10 items-center justify-center rounded-xl text-white"
-              style={{ backgroundColor: section.color }}
-            >
-              <section.icon size={18} />
-            </div>
-            <span className="text-[11px] font-medium leading-tight">{section.title}</span>
-          </Link>
+          <StaggerItem key={section.slug}>
+            <Link href={`/${section.slug}`} className="block">
+              <motion.div
+                whileTap={{ scale: 0.92 }}
+                whileHover={{ y: -3 }}
+                className="glass flex flex-col items-center gap-2 rounded-2xl px-2 py-4 text-center"
+              >
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-xl text-white"
+                  style={{ backgroundColor: section.color }}
+                >
+                  <section.icon size={18} />
+                </div>
+                <span className="text-[11px] font-medium leading-tight">{section.title}</span>
+              </motion.div>
+            </Link>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerGroup>
     </div>
   );
 }

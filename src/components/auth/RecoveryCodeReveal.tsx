@@ -1,12 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { KeyRound, Copy, Check } from "lucide-react";
 import AuthScreenLayout from "./AuthScreenLayout";
+import ConfettiBurst from "../common/ConfettiBurst";
 
 export default function RecoveryCodeReveal({ code, onContinue }: { code: string; onContinue: () => void }) {
   const [confirmed, setConfirmed] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [burst, setBurst] = useState(0);
+
+  useEffect(() => {
+    (async () => {
+      await Promise.resolve();
+      setBurst((b) => b + 1);
+    })();
+  }, []);
 
   const copy = async () => {
     await navigator.clipboard.writeText(code);
@@ -45,6 +54,7 @@ export default function RecoveryCodeReveal({ code, onContinue }: { code: string;
       >
         Continue
       </button>
+      <ConfettiBurst trigger={burst} />
     </AuthScreenLayout>
   );
 }

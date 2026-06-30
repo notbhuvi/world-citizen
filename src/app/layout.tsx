@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Quicksand, Caveat } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegistration from "@/components/layout/ServiceWorkerRegistration";
 import AppShell from "@/components/layout/AppShell";
@@ -7,14 +7,16 @@ import AuthGate from "@/components/auth/AuthGate";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { BASE_PATH } from "@/lib/basePath";
 
-const geistSans = Geist({
+const quicksand = Quicksand({
   variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-mono",
+const caveat = Caveat({
+  variable: "--font-handwritten",
   subsets: ["latin"],
+  weight: ["600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -56,7 +58,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${quicksand.variable} ${caveat.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col">
         <ServiceWorkerRegistration />
         <AuthProvider>

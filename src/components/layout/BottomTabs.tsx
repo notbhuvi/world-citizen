@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import { Home, Siren, Map, Bookmark, Grid2x2 } from "lucide-react";
 
 const TABS = [
@@ -21,15 +22,24 @@ export default function BottomTabs() {
         {TABS.map(({ href, label, icon: Icon }) => {
           const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
           return (
-            <Link
-              key={href}
-              href={href}
-              className={`flex flex-1 flex-col items-center gap-1 rounded-xl py-1.5 transition-colors ${
-                active ? "text-accent" : "text-muted"
-              }`}
-            >
-              <Icon size={20} strokeWidth={active ? 2.4 : 2} />
-              <span className="text-[10px] font-medium">{label}</span>
+            <Link key={href} href={href} className="relative flex flex-1 flex-col items-center gap-1 rounded-xl py-1.5">
+              {active && (
+                <motion.div
+                  layoutId="tab-pill"
+                  className="absolute inset-0 rounded-xl bg-accent/10"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <motion.span
+                animate={active ? { y: -2, scale: 1.08 } : { y: 0, scale: 1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                className={`relative z-10 ${active ? "text-accent" : "text-muted"}`}
+              >
+                <Icon size={20} strokeWidth={active ? 2.4 : 2} />
+              </motion.span>
+              <span className={`relative z-10 text-[10px] font-semibold ${active ? "text-accent" : "text-muted"}`}>
+                {label}
+              </span>
             </Link>
           );
         })}

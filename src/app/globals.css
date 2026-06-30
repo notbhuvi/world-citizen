@@ -34,6 +34,7 @@
   --color-danger: var(--danger);
   --color-muted: var(--muted);
   --font-sans: var(--font-sans);
+  --font-handwritten: var(--font-handwritten);
 }
 
 * {
@@ -71,6 +72,60 @@ body {
 
 ::-webkit-scrollbar {
   display: none;
+}
+
+.font-handwritten {
+  font-family: var(--font-handwritten), cursive;
+}
+
+.blob-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.blob-bg::before,
+.blob-bg::after {
+  content: "";
+  position: absolute;
+  width: 60vw;
+  height: 60vw;
+  max-width: 420px;
+  max-height: 420px;
+  border-radius: 9999px;
+  filter: blur(70px);
+  opacity: 0.35;
+}
+
+.blob-bg::before {
+  top: -10%;
+  left: -15%;
+  background: radial-gradient(circle, var(--accent), transparent 70%);
+}
+
+.blob-bg::after {
+  bottom: -15%;
+  right: -15%;
+  background: radial-gradient(circle, var(--accent-2), transparent 70%);
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-8deg);
+  }
+  75% {
+    transform: rotate(8deg);
+  }
+}
+
+.animate-wiggle {
+  animation: wiggle 0.4s ease-in-out;
 }
 
 @media (prefers-reduced-motion: reduce) {

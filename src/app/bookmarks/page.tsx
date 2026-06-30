@@ -24,7 +24,7 @@ export default function BookmarksPage() {
           <BookmarkIcon size={22} />
         </div>
         <div>
-          <h1 className="text-xl font-semibold">Saved</h1>
+          <h1 className="font-handwritten text-2xl font-bold">Saved ⭐</h1>
           <p className="text-xs text-muted">Everything you&apos;ve bookmarked, stored on this device</p>
         </div>
       </div>

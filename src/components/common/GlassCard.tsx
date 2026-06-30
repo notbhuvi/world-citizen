@@ -14,10 +14,11 @@ export default function GlassCard({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileTap={onClick ? { scale: 0.97 } : undefined}
-      transition={{ duration: 0.25, ease: "easeOut" }}
+      initial={{ opacity: 0, y: 12, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      whileTap={onClick ? { scale: 0.95 } : undefined}
+      whileHover={onClick ? { scale: 1.015 } : undefined}
+      transition={{ type: "spring", stiffness: 340, damping: 26 }}
       onClick={onClick}
       className={`glass rounded-2xl p-4 ${className}`}
     >
