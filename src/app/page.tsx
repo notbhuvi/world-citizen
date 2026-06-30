@@ -1,10 +1,11 @@
 "use client";
 
-import { Wind, Sun, Sunrise, Sunset, MapPin, AlertTriangle } from "lucide-react";
+import { Wind, Sun, Sunrise, Sunset, MapPin, AlertTriangle, RefreshCw } from "lucide-react";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import WeatherCard from "@/components/dashboard/WeatherCard";
 import StatCard from "@/components/dashboard/StatCard";
+import AbroadCard from "@/components/dashboard/AbroadCard";
 import GlassCard from "@/components/common/GlassCard";
 import Link from "next/link";
 import { SECTIONS } from "@/lib/sections";
@@ -29,9 +30,20 @@ function formatTime(iso: string) {
   return new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 }
 
+function formatRelativeTime(timestamp: number): string {
+  const diffMs = Date.now() - timestamp;
+  const minutes = Math.round(diffMs / 60000);
+  if (minutes < 1) return "just now";
+  if (minutes === 1) return "1 minute ago";
+  if (minutes < 60) return `${minutes} minutes ago`;
+  const hours = Math.round(minutes / 60);
+  if (hours === 1) return "1 hour ago";
+  return `${hours} hours ago`;
+}
+
 export default function DashboardPage() {
   const { location, error: geoError, permissionDenied, refresh } = useGeolocation();
-  const { weather, airQuality, loading, error, stale } = useDashboardData(location);
+  const { weather, airQuality, loading, error, stale, lastUpdated, refresh: refreshDashboard } = useDashboardData(location);
 
   const cityLabel = location ? [location.city, location.country].filter(Boolean).join(", ") : undefined;
   const quickLinks = SECTIONS.filter((s) => s.slug !== "");
@@ -42,6 +54,8 @@ export default function DashboardPage() {
         <MapPin size={14} />
         {cityLabel ?? "Detecting your location…"}
       </div>
+
+      <AbroadCard location={location} />
 
       {permissionDenied && (
         <GlassCard className="mb-4">
@@ -98,6 +112,13 @@ export default function DashboardPage() {
             <StatCard icon={Sunset} label="Sunset" value={formatTime(weather.sunset)} accentColor="#FF453A" />
           </div>
         )
+      )}
+
+      {weather && lastUpdated && (
+        <button onClick={refreshDashboard} className="mt-3 flex items-center gap-1.5 text-[11px] text-muted">
+          <RefreshCw size={11} className={loading ? "animate-spin" : ""} />
+          Updated {formatRelativeTime(lastUpdated)} · tap to refresh
+        </button>
       )}
 
       <h2 className="mb-3 mt-7 text-sm font-semibold text-muted">Everything else</h2>

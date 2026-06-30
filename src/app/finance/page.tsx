@@ -133,6 +133,141 @@ function SalaryCalculator() {
   );
 }
 
+type UnitCategory = "Temperature" | "Distance" | "Weight";
+
+const UNIT_OPTIONS: Record<UnitCategory, string[]> = {
+  Temperature: ["Celsius", "Fahrenheit", "Kelvin"],
+  Distance: ["Kilometers", "Miles", "Meters", "Feet"],
+  Weight: ["Kilograms", "Pounds", "Grams", "Ounces"],
+};
+
+function toBase(value: number, unit: string, category: UnitCategory): number {
+  if (category === "Temperature") {
+    if (unit === "Fahrenheit") return ((value - 32) * 5) / 9;
+    if (unit === "Kelvin") return value - 273.15;
+    return value;
+  }
+  if (category === "Distance") {
+    if (unit === "Miles") return value * 1.60934;
+    if (unit === "Meters") return value / 1000;
+    if (unit === "Feet") return value * 0.0003048;
+    return value;
+  }
+  if (unit === "Pounds") return value * 0.453592;
+  if (unit === "Grams") return value / 1000;
+  if (unit === "Ounces") return value * 0.0283495;
+  return value;
+}
+
+function fromBase(value: number, unit: string, category: UnitCategory): number {
+  if (category === "Temperature") {
+    if (unit === "Fahrenheit") return (value * 9) / 5 + 32;
+    if (unit === "Kelvin") return value + 273.15;
+    return value;
+  }
+  if (category === "Distance") {
+    if (unit === "Miles") return value / 1.60934;
+    if (unit === "Meters") return value * 1000;
+    if (unit === "Feet") return value / 0.0003048;
+    return value;
+  }
+  if (unit === "Pounds") return value / 0.453592;
+  if (unit === "Grams") return value * 1000;
+  if (unit === "Ounces") return value / 0.0283495;
+  return value;
+}
+
+function UnitConverter() {
+  const [category, setCategory] = useState<UnitCategory>("Temperature");
+  const [amount, setAmount] = useState("100");
+  const [fromUnit, setFromUnit] = useState("Celsius");
+  const [toUnit, setToUnit] = useState("Fahrenheit");
+
+  const units = UNIT_OPTIONS[category];
+  const numeric = parseFloat(amount) || 0;
+  const result = fromBase(toBase(numeric, fromUnit, category), toUnit, category);
+
+  const changeCategory = (next: UnitCategory) => {
+    setCategory(next);
+    setFromUnit(UNIT_OPTIONS[next][0]);
+    setToUnit(UNIT_OPTIONS[next][1]);
+  };
+
+  return (
+    <GlassCard className="mb-5">
+      <p className="mb-3 text-sm font-semibold">Unit Converter</p>
+      <div className="mb-3">
+        <FilterChips options={Object.keys(UNIT_OPTIONS)} active={category} onChange={(v) => changeCategory(v as UnitCategory)} />
+      </div>
+      <input
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        inputMode="decimal"
+        className="glass mb-3 w-full rounded-xl px-3 py-2.5 text-sm outline-none"
+      />
+      <div className="grid grid-cols-2 gap-2">
+        <select value={fromUnit} onChange={(e) => setFromUnit(e.target.value)} className="glass rounded-xl px-3 py-2.5 text-sm outline-none">
+          {units.map((u) => (
+            <option key={u} value={u}>
+              {u}
+            </option>
+          ))}
+        </select>
+        <select value={toUnit} onChange={(e) => setToUnit(e.target.value)} className="glass rounded-xl px-3 py-2.5 text-sm outline-none">
+          {units.map((u) => (
+            <option key={u} value={u}>
+              {u}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="mt-3 rounded-xl bg-accent/10 px-3 py-2.5 text-center">
+        <p className="text-[10px] text-muted">Result</p>
+        <p className="text-lg font-semibold text-accent">
+          {result.toFixed(2)} {toUnit}
+        </p>
+      </div>
+    </GlassCard>
+  );
+}
+
+function TipCalculator() {
+  const [bill, setBill] = useState("50");
+  const [tipPercent, setTipPercent] = useState(15);
+  const [people, setPeople] = useState("1");
+
+  const billAmount = parseFloat(bill) || 0;
+  const numPeople = Math.max(1, parseInt(people) || 1);
+  const tipAmount = (billAmount * tipPercent) / 100;
+  const total = billAmount + tipAmount;
+
+  return (
+    <GlassCard className="mb-5">
+      <p className="mb-3 text-sm font-semibold">Tip Calculator</p>
+      <div className="grid grid-cols-2 gap-2">
+        <Field label="Bill amount" value={bill} onChange={setBill} />
+        <Field label="Split between" value={people} onChange={setPeople} />
+      </div>
+      <div className="mt-3 flex items-center gap-2">
+        {[10, 15, 18, 20, 25].map((pct) => (
+          <button
+            key={pct}
+            onClick={() => setTipPercent(pct)}
+            className={`flex-1 rounded-xl py-2 text-xs font-medium ${tipPercent === pct ? "bg-accent text-white" : "bg-black/5 dark:bg-white/5"}`}
+          >
+            {pct}%
+          </button>
+        ))}
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+        <Result label="Tip" value={tipAmount.toFixed(2)} />
+        <Result label="Total" value={total.toFixed(2)} />
+        <Result label="Per person" value={(total / numPeople).toFixed(2)} />
+      </div>
+    </GlassCard>
+  );
+}
+
 function Field({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
     <label className="block">
@@ -163,11 +298,17 @@ export default function FinancePage() {
   return (
     <SectionShell title={meta.title} description={meta.description} icon={meta.icon} color={meta.color}>
       <div className="mb-4">
-        <FilterChips options={["Currency", "EMI / Loan", "Salary / Tax"]} active={tab} onChange={setTab} />
+        <FilterChips
+          options={["Currency", "EMI / Loan", "Salary / Tax", "Units", "Tip"]}
+          active={tab}
+          onChange={setTab}
+        />
       </div>
       {tab === "Currency" && <CurrencyConverter />}
       {tab === "EMI / Loan" && <EmiCalculator />}
       {tab === "Salary / Tax" && <SalaryCalculator />}
+      {tab === "Units" && <UnitConverter />}
+      {tab === "Tip" && <TipCalculator />}
     </SectionShell>
   );
 }

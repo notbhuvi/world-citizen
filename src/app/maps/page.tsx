@@ -18,6 +18,10 @@ const CATEGORIES = [
   { key: "busStops" as const, label: "Bus Stops" },
   { key: "evCharging" as const, label: "EV Charging" },
   { key: "parking" as const, label: "Parking" },
+  { key: "toilets" as const, label: "Public Toilets" },
+  { key: "waterRefill" as const, label: "Water Refill" },
+  { key: "laundromats" as const, label: "Laundromats" },
+  { key: "vets" as const, label: "Vet Clinics" },
 ];
 
 export default function MapsPage() {

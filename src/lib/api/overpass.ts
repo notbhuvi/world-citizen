@@ -111,4 +111,8 @@ export const CATEGORY_PRESETS: Record<string, OverpassPreset[]> = {
   realEstate: [{ key: "real_estate", label: "Real Estate Agent", query: "office=estate_agent" }],
   embassies: [{ key: "embassy", label: "Embassy", query: "office=diplomatic" }],
   attractions: [{ key: "attraction", label: "Attraction", query: "tourism=attraction" }],
+  laundromats: [{ key: "laundry", label: "Laundromat", query: "shop=laundry" }],
+  toilets: [{ key: "toilets", label: "Public Toilet", query: "amenity=toilets" }],
+  waterRefill: [{ key: "drinking_water", label: "Water Refill", query: "amenity=drinking_water" }],
+  vets: [{ key: "veterinary", label: "Vet Clinic", query: "amenity=veterinary" }],
 };

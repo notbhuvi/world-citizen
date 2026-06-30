@@ -1,10 +1,37 @@
-const CACHE_VERSION = "world-citizen-v1";
+const CACHE_VERSION = "world-citizen-v2";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const API_CACHE = `${CACHE_VERSION}-api`;
+const TILE_CACHE = `${CACHE_VERSION}-tiles`;
 
 const BASE_PATH = "/world-citizen";
 const OFFLINE_URL = `${BASE_PATH}/offline/`;
-const PRECACHE_URLS = [`${BASE_PATH}/`, OFFLINE_URL, `${BASE_PATH}/manifest.webmanifest`];
+
+const ROUTE_SLUGS = [
+  "",
+  "ai",
+  "bookmarks",
+  "calendar",
+  "education",
+  "emergency",
+  "finance",
+  "food",
+  "government",
+  "health",
+  "housing",
+  "jobs",
+  "laws",
+  "maps",
+  "more",
+  "offline",
+  "shopping",
+  "travel",
+  "utilities",
+];
+
+const PRECACHE_URLS = [
+  ...ROUTE_SLUGS.map((slug) => `${BASE_PATH}/${slug}${slug ? "/" : ""}`),
+  `${BASE_PATH}/manifest.webmanifest`,
+];
 
 const API_HOSTS = [
   "api.open-meteo.com",
@@ -17,22 +44,26 @@ const API_HOSTS = [
   "api.bigdatacloud.net",
 ];
 
+function isTileHost(hostname) {
+  return hostname.endsWith(".tile.openstreetmap.org");
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(STATIC_CACHE).then((cache) => cache.addAll(PRECACHE_URLS)).then(() => self.skipWaiting())
+    caches
+      .open(STATIC_CACHE)
+      .then((cache) => Promise.allSettled(PRECACHE_URLS.map((url) => cache.add(url))))
+      .then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener("activate", (event) => {
+  const keep = [STATIC_CACHE, API_CACHE, TILE_CACHE];
   event.waitUntil(
     caches
       .keys()
       .then((keys) =>
-        Promise.all(
-          keys
-            .filter((key) => key.startsWith("world-citizen-") && key !== STATIC_CACHE && key !== API_CACHE)
-            .map((key) => caches.delete(key))
-        )
+        Promise.all(keys.filter((key) => key.startsWith("world-citizen-") && !keep.includes(key)).map((key) => caches.delete(key)))
       )
       .then(() => self.clients.claim())
   );
@@ -43,6 +74,11 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
+
+  if (isTileHost(url.hostname)) {
+    event.respondWith(cacheFirst(request, TILE_CACHE, 500));
+    return;
+  }
 
   if (API_HOSTS.includes(url.hostname)) {
     event.respondWith(staleWhileRevalidate(request, API_CACHE));
@@ -78,4 +114,30 @@ async function staleWhileRevalidate(request, cacheName) {
   return cached || (await networkPromise) || new Response(JSON.stringify({ offline: true }), {
     headers: { "Content-Type": "application/json" },
   });
+}
+
+async function cacheFirst(request, cacheName, maxEntries) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+  if (cached) return cached;
+
+  try {
+    const response = await fetch(request);
+    // Cross-origin tile <img> requests are "opaque" (status 0, ok=false) but still cacheable/usable.
+    if (response.ok || response.type === "opaque") {
+      await cache.put(request, response.clone());
+      trimCache(cache, maxEntries);
+    }
+    return response;
+  } catch {
+    return cached || Response.error();
+  }
+}
+
+async function trimCache(cache, maxEntries) {
+  const keys = await cache.keys();
+  if (keys.length > maxEntries) {
+    await cache.delete(keys[0]);
+    trimCache(cache, maxEntries);
+  }
 }

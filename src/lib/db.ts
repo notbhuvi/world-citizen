@@ -97,6 +97,14 @@ export async function getCache<T>(key: string, maxAgeMs?: number): Promise<T | n
   return record.data as T;
 }
 
+export async function getCacheEntry<T>(key: string): Promise<{ data: T; updatedAt: number } | null> {
+  const db = await getDb();
+  if (!db) return null;
+  const record = (await db.get("cache", key)) as CacheRecord | undefined;
+  if (!record) return null;
+  return { data: record.data as T, updatedAt: record.updatedAt };
+}
+
 export async function setCache(key: string, data: unknown): Promise<void> {
   const db = await getDb();
   if (!db) return;

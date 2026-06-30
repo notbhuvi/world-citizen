@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { fetchAirQuality, fetchWeather, type AirQualitySnapshot, type WeatherSnapshot } from "@/lib/api/openMeteo";
-import { getCache, setCache } from "@/lib/db";
+import { getCacheEntry, setCache } from "@/lib/db";
 import type { LocationInfo } from "@/lib/geo";
 
 interface DashboardData {
@@ -11,6 +11,8 @@ interface DashboardData {
   loading: boolean;
   error: string | null;
   stale: boolean;
+  lastUpdated: number | null;
+  refresh: () => void;
 }
 
 export function useDashboardData(location: LocationInfo | null): DashboardData {
@@ -19,39 +21,46 @@ export function useDashboardData(location: LocationInfo | null): DashboardData {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [stale, setStale] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<number | null>(null);
+  const [refreshTick, setRefreshTick] = useState(0);
+
+  const load = useCallback(async (lat: number, lon: number) => {
+    const key = `dashboard-${lat.toFixed(2)}-${lon.toFixed(2)}`;
+    setLoading(true);
+    setError(null);
+    const cached = await getCacheEntry<{ weather: WeatherSnapshot; airQuality: AirQualitySnapshot }>(key);
+    if (cached) {
+      setWeather(cached.data.weather);
+      setAirQuality(cached.data.airQuality);
+      setLastUpdated(cached.updatedAt);
+    }
+    try {
+      const [w, a] = await Promise.all([fetchWeather(lat, lon), fetchAirQuality(lat, lon)]);
+      setWeather(w);
+      setAirQuality(a);
+      setStale(false);
+      const now = Date.now();
+      setLastUpdated(now);
+      await setCache(key, { weather: w, airQuality: a });
+    } catch {
+      if (cached) {
+        setStale(true);
+      } else {
+        setError("Couldn't load live data. Check your connection.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!location) return;
-    const key = `dashboard-${location.latitude.toFixed(2)}-${location.longitude.toFixed(2)}`;
-
     (async () => {
-      setLoading(true);
-      setError(null);
-      const cached = await getCache<{ weather: WeatherSnapshot; airQuality: AirQualitySnapshot }>(key);
-      if (cached) {
-        setWeather(cached.weather);
-        setAirQuality(cached.airQuality);
-      }
-      try {
-        const [w, a] = await Promise.all([
-          fetchWeather(location.latitude, location.longitude),
-          fetchAirQuality(location.latitude, location.longitude),
-        ]);
-        setWeather(w);
-        setAirQuality(a);
-        setStale(false);
-        await setCache(key, { weather: w, airQuality: a });
-      } catch {
-        if (cached) {
-          setStale(true);
-        } else {
-          setError("Couldn't load live data. Check your connection.");
-        }
-      } finally {
-        setLoading(false);
-      }
+      await load(location.latitude, location.longitude);
     })();
-  }, [location]);
+  }, [location, load, refreshTick]);
 
-  return { weather, airQuality, loading, error, stale };
+  const refresh = useCallback(() => setRefreshTick((t) => t + 1), []);
+
+  return { weather, airQuality, loading, error, stale, lastUpdated, refresh };
 }

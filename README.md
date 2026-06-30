@@ -24,6 +24,10 @@ This build intentionally has **no server and no cloud account**. All personal da
 | Calendar (public holidays) | ✅ Live | Nager.Date API, keyless |
 | Government, Jobs, Travel, Utilities, Laws | ✅ Live, guided | Curated topic lists, each with an "Ask [your AI app]" handoff button plus a plain web-search fallback — these areas legally differ by country/region, so the app points you to authoritative sources rather than guessing facts |
 | AI Assistant | ✅ Live | On first launch, the app asks which AI app you already use (ChatGPT, Claude, Gemini, Perplexity, or Copilot) and remembers it. Research buttons throughout the app hand off your question to that app via a deep link. Voice search and text-to-speech work with no setup; an optional in-app chat is also available if you add your own Anthropic API key |
+| Travel toolkit (World Clock, Packing Checklist, Travel Notes, Essentials nearby) | ✅ Live | Pure client-side, stored in IndexedDB. Essentials reuses the Overpass nearby-places engine for toilets/water refill/laundromats |
+| Emergency medical profile + ICE contacts + QR sharing | ✅ Live | Local-only blood type/allergies/medications/contacts, with one-tap share or a scannable QR code for showing to first responders without unlocking the phone for them |
+| Home country / "abroad" detection | ✅ Live | Set your home country once; the dashboard surfaces a travel card with quick links whenever your detected location differs |
+| Unit converter + tip calculator | ✅ Live | Pure client-side math, added to the Finance page |
 
 ## Tech stack
 

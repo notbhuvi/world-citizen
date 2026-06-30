@@ -9,6 +9,7 @@ const CATEGORIES = [
   { key: "clinics" as const, label: "Clinics" },
   { key: "pharmacies" as const, label: "Pharmacies" },
   { key: "dentists" as const, label: "Dentists" },
+  { key: "vets" as const, label: "Vet Clinics" },
 ];
 
 export default function HealthPage() {

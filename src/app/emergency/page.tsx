@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Phone, Share2, Siren, ShieldAlert, Flame, HeartPulse, Users, Baby } from "lucide-react";
+import { Phone, Share2, Siren, ShieldAlert, Flame, HeartPulse, Users, Baby, QrCode } from "lucide-react";
 import SectionShell from "@/components/common/SectionShell";
 import GlassCard from "@/components/common/GlassCard";
+import EmergencyProfileCard from "@/components/common/EmergencyProfileCard";
+import QrCodeModal from "@/components/common/QrCodeModal";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { getEmergencyNumbers } from "@/lib/emergencyNumbers";
 import { getSection } from "@/lib/sections";
@@ -12,16 +14,20 @@ export default function EmergencyPage() {
   const meta = getSection("emergency")!;
   const { location } = useGeolocation();
   const [sharing, setSharing] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
   const numbers = getEmergencyNumbers(location?.countryCode);
 
+  const locationUrl = location
+    ? `https://www.openstreetmap.org/?mlat=${location.latitude}&mlon=${location.longitude}#map=17/${location.latitude}/${location.longitude}`
+    : null;
+
   const shareLocation = async () => {
-    if (!location) return;
+    if (!location || !locationUrl) return;
     setSharing(true);
-    const url = `https://www.openstreetmap.org/?mlat=${location.latitude}&mlon=${location.longitude}#map=17/${location.latitude}/${location.longitude}`;
-    const text = `I need help. My live location: ${url}`;
+    const text = `I need help. My live location: ${locationUrl}`;
     try {
       if (navigator.share) {
-        await navigator.share({ title: "My location", text, url });
+        await navigator.share({ title: "My location", text, url: locationUrl });
       } else {
         await navigator.clipboard.writeText(text);
         alert("Location link copied — paste it to whoever you need to reach.");
@@ -51,10 +57,19 @@ export default function EmergencyPage() {
           <Share2 size={18} />
           {sharing ? "Sharing…" : "SOS — Share My Live Location"}
         </button>
+        <button
+          onClick={() => setQrOpen(true)}
+          disabled={!location}
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-black/5 py-2.5 text-xs font-medium disabled:opacity-50 dark:bg-white/10"
+        >
+          <QrCode size={14} /> Show as QR code
+        </button>
         <p className="mt-2 text-center text-[11px] text-muted">
           {location ? "Sends your current GPS location to whoever you choose." : "Waiting for location access…"}
         </p>
       </GlassCard>
+
+      <QrCodeModal open={qrOpen} title="My Location" data={locationUrl} onClose={() => setQrOpen(false)} />
 
       <div className="mb-5 grid grid-cols-2 gap-3">
         {callButtons.map(({ label, icon: Icon, number, color }) => (
@@ -86,6 +101,8 @@ export default function EmergencyPage() {
           )}
         </div>
       )}
+
+      <EmergencyProfileCard />
 
       <p className="text-[11px] text-muted">
         Numbers are based on your detected country{location?.country ? ` (${location.country})` : ""} and may vary by region.
