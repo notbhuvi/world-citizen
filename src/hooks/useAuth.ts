@@ -14,7 +14,9 @@ export interface AuthAccount {
 }
 
 const ACCOUNT_KEY = "auth_account";
-const SESSION_KEY = "wc_unlocked";
+// Persisted in IndexedDB (not sessionStorage) so staying logged in survives the
+// PWA being closed/backgrounded — only an explicit "Lock app" or delete clears it.
+const UNLOCKED_KEY = "auth_unlocked";
 
 export function useAuth() {
   const [account, setAccountState] = useState<AuthAccount | null>(null);
@@ -23,9 +25,12 @@ export function useAuth() {
 
   useEffect(() => {
     (async () => {
-      const acc = await getSetting<AuthAccount | null>(ACCOUNT_KEY, null);
+      const [acc, wasUnlocked] = await Promise.all([
+        getSetting<AuthAccount | null>(ACCOUNT_KEY, null),
+        getSetting<boolean>(UNLOCKED_KEY, false),
+      ]);
       setAccountState(acc);
-      setUnlocked(typeof window !== "undefined" && sessionStorage.getItem(SESSION_KEY) === "1");
+      setUnlocked(wasUnlocked);
       setReady(true);
     })();
   }, []);
@@ -46,7 +51,7 @@ export function useAuth() {
     };
     await setSetting(ACCOUNT_KEY, account);
     setAccountState(account);
-    sessionStorage.setItem(SESSION_KEY, "1");
+    await setSetting(UNLOCKED_KEY, true);
     setUnlocked(true);
     return recoveryCode;
   }, []);
@@ -56,7 +61,7 @@ export function useAuth() {
       if (!account) return false;
       const hash = await deriveHash(password, account.passwordSalt);
       if (hash !== account.passwordHash) return false;
-      sessionStorage.setItem(SESSION_KEY, "1");
+      await setSetting(UNLOCKED_KEY, true);
       setUnlocked(true);
       return true;
     },
@@ -64,7 +69,7 @@ export function useAuth() {
   );
 
   const lock = useCallback(() => {
-    sessionStorage.removeItem(SESSION_KEY);
+    setSetting(UNLOCKED_KEY, false);
     setUnlocked(false);
   }, []);
 
@@ -83,7 +88,7 @@ export function useAuth() {
       const next: AuthAccount = { ...account, passwordSalt, passwordHash, recoverySalt, recoveryHash };
       await setSetting(ACCOUNT_KEY, next);
       setAccountState(next);
-      sessionStorage.setItem(SESSION_KEY, "1");
+      await setSetting(UNLOCKED_KEY, true);
       setUnlocked(true);
       return newRecoveryCode;
     },
@@ -93,7 +98,7 @@ export function useAuth() {
   const deleteAccount = useCallback(async () => {
     await setSetting(ACCOUNT_KEY, null);
     setAccountState(null);
-    sessionStorage.removeItem(SESSION_KEY);
+    await setSetting(UNLOCKED_KEY, false);
     setUnlocked(false);
   }, []);
 
