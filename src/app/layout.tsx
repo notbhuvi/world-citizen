@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegistration from "@/components/layout/ServiceWorkerRegistration";
 import AppShell from "@/components/layout/AppShell";
+import AuthGate from "@/components/auth/AuthGate";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 import { BASE_PATH } from "@/lib/basePath";
 
 const geistSans = Geist({
@@ -57,7 +59,11 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col">
         <ServiceWorkerRegistration />
-        <AppShell>{children}</AppShell>
+        <AuthProvider>
+          <AuthGate>
+            <AppShell>{children}</AppShell>
+          </AuthGate>
+        </AuthProvider>
       </body>
     </html>
   );

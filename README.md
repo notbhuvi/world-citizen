@@ -2,7 +2,7 @@
 
 **Everything a person needs to know anywhere in the world.**
 
-A local-first Progressive Web App (PWA) that detects your location and surfaces weather, air quality, health, emergency, finance, travel, and civic information for wherever you are. No backend, no account, no app store — install it on your iPhone via Safari → Add to Home Screen, and all personal data (bookmarks, settings, cached responses) stays on-device for offline use.
+A local-first Progressive Web App (PWA) that detects your location and surfaces weather, air quality, health, emergency, finance, travel, and civic information for wherever you are. No backend, no cloud account, no app store — install it on your iPhone via Safari → Add to Home Screen. The app does have its own login (see below), but it's entirely local: there's no server to log into, just a password lock for this device.
 
 **Live URL:** https://notbhuvi.github.io/world-citizen/
 
@@ -10,7 +10,15 @@ The app is statically hosted on GitHub Pages (free, just serves files — no ser
 
 ## Why local-first
 
-This build intentionally has **no server and no cloud account**. All personal data (bookmarks, settings, cached API responses, your optional AI API key) lives in your iPhone's IndexedDB, never leaves the device except for the direct, anonymous calls to the public data APIs below.
+This build intentionally has **no server and no cloud account**. All personal data (bookmarks, settings, cached API responses, your optional AI API key, your login) lives in your iPhone's IndexedDB, never leaves the device except for the direct, anonymous calls to the public data APIs below.
+
+## Login
+
+On first launch you create a local account: a name and a password. There's no email, no server, no "create account" request going anywhere — your password is hashed with PBKDF2 (150,000 iterations, SHA-256) and the hash is stored only in this device's IndexedDB; the plaintext password is never stored anywhere.
+
+Because there's no server, there's also no email-based password reset. Instead, signup shows you a **one-time recovery code** — write it down somewhere safe. If you forget your password, use that code on the login screen to set a new one (which also rotates the recovery code). If you lose both the password and the recovery code, the only way back in is deleting the account from the "More" tab and signing up fresh — your bookmarks and other app data aren't affected by that, only the login itself.
+
+This protects against someone picking up your unlocked phone and opening the app, but it's not equivalent to a real server-backed account — there's no fraud protection, no cross-device sync, and no way for anyone (including us) to recover a forgotten password and recovery code together.
 
 ## What's live vs. reference-only
 

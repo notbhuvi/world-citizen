@@ -2,9 +2,11 @@
 
 import { Moon, Sun, Globe } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
+import { useAuthContext } from "@/components/auth/AuthProvider";
 
 export default function TopBar() {
   const { theme, toggleTheme, ready } = useTheme();
+  const auth = useAuthContext();
 
   return (
     <header className="safe-top sticky top-0 z-40">
@@ -15,7 +17,9 @@ export default function TopBar() {
           </div>
           <div>
             <p className="text-sm font-semibold leading-tight">World Citizen</p>
-            <p className="text-[11px] text-muted leading-tight">Everywhere, instantly</p>
+            <p className="text-[11px] text-muted leading-tight">
+              {auth.account ? `Hi, ${auth.account.name}` : "Everywhere, instantly"}
+            </p>
           </div>
         </div>
         <button
