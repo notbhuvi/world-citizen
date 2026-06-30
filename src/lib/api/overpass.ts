@@ -35,10 +35,12 @@ export async function fetchNearby(
   lat: number,
   lon: number,
   presets: OverpassPreset[],
-  radiusMeters = 5000
+  radiusMeters = 50000
 ): Promise<NearbyPlace[]> {
   const filters = presets.map((p) => `node[${p.query}](around:${radiusMeters},${lat},${lon});`).join("\n");
-  const query = `[out:json][timeout:20];(${filters});out center 60;`;
+  // Larger radii can match far more nodes in dense cities, and Overpass's "around" doesn't
+  // return them nearest-first — so pull a bigger candidate pool before we sort by distance below.
+  const query = `[out:json][timeout:25];(${filters});out center 200;`;
 
   let lastError: unknown;
   for (const endpoint of ENDPOINTS) {
@@ -76,7 +78,7 @@ export async function fetchNearby(
           };
         })
         .sort((a, b) => a.distanceKm - b.distanceKm)
-        .slice(0, 40);
+        .slice(0, 50);
     } catch (err) {
       lastError = err;
     }

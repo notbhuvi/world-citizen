@@ -13,6 +13,8 @@ import ShareButton from "./ShareButton";
 import MapAppChooser from "./MapAppChooser";
 import type { MapDestination } from "@/lib/mapApps";
 
+const RADIUS_OPTIONS_KM = [5, 15, 30, 50];
+
 export default function NearbyFinder({
   categories,
   sectionId,
@@ -22,6 +24,7 @@ export default function NearbyFinder({
 }) {
   const { location } = useGeolocation();
   const [activeCategory, setActiveCategory] = useState(categories[0].label);
+  const [radiusKm, setRadiusKm] = useState(50);
   const [query, setQuery] = useState("");
   const [places, setPlaces] = useState<NearbyPlace[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +35,7 @@ export default function NearbyFinder({
 
   useEffect(() => {
     if (!location) return;
-    const cacheKey = `nearby-${sectionId}-${activePreset.key}-${location.latitude.toFixed(2)}-${location.longitude.toFixed(2)}`;
+    const cacheKey = `nearby-${sectionId}-${activePreset.key}-${radiusKm}-${location.latitude.toFixed(2)}-${location.longitude.toFixed(2)}`;
 
     (async () => {
       setLoading(true);
@@ -40,7 +43,12 @@ export default function NearbyFinder({
       const cached = await getCache<NearbyPlace[]>(cacheKey, 1000 * 60 * 30);
       if (cached) setPlaces(cached);
       try {
-        const results = await fetchNearby(location.latitude, location.longitude, CATEGORY_PRESETS[activePreset.key]);
+        const results = await fetchNearby(
+          location.latitude,
+          location.longitude,
+          CATEGORY_PRESETS[activePreset.key],
+          radiusKm * 1000
+        );
         setPlaces(results);
         await setCache(cacheKey, results);
       } catch {
@@ -49,7 +57,7 @@ export default function NearbyFinder({
         setLoading(false);
       }
     })();
-  }, [location, activePreset, sectionId]);
+  }, [location, activePreset, sectionId, radiusKm]);
 
   const filtered = useMemo(
     () => places.filter((p) => p.name.toLowerCase().includes(query.toLowerCase())),
@@ -61,8 +69,16 @@ export default function NearbyFinder({
       <div className="mb-3">
         <SearchBar placeholder={`Search ${activeCategory.toLowerCase()}...`} value={query} onChange={setQuery} />
       </div>
-      <div className="mb-4">
+      <div className="mb-2.5">
         <FilterChips options={categories.map((c) => c.label)} active={activeCategory} onChange={setActiveCategory} />
+      </div>
+      <div className="mb-4 flex items-center gap-2">
+        <span className="text-[11px] text-muted">Within</span>
+        <FilterChips
+          options={RADIUS_OPTIONS_KM.map((km) => `${km} km`)}
+          active={`${radiusKm} km`}
+          onChange={(v) => setRadiusKm(parseInt(v))}
+        />
       </div>
 
       {!location && <p className="text-sm text-muted">Waiting for your location…</p>}
@@ -82,7 +98,7 @@ export default function NearbyFinder({
       )}
 
       {!loading && !error && filtered.length === 0 && location && (
-        <p className="text-sm text-muted">No {activeCategory.toLowerCase()} found within 5km.</p>
+        <p className="text-sm text-muted">No {activeCategory.toLowerCase()} found within {radiusKm} km.</p>
       )}
 
       <div className="space-y-2.5">
