@@ -1,6 +1,6 @@
 # External APIs
 
-All APIs used by World Citizen are **public and keyless** unless noted. Every call is made directly from the user's device — there is no proxy server.
+All APIs used by Moved Out are **public and keyless** unless noted. Every call is made directly from the user's device — there is no proxy server.
 
 | API | Used for | Auth | Docs |
 |---|---|---|---|

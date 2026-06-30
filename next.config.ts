@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const repoBasePath = "/world-citizen";
+const repoBasePath = "/moved-out";
 
 const nextConfig: NextConfig = {
   output: "export",

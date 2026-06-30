@@ -2,11 +2,11 @@
 
 ## Installing on your iPhone (the normal way)
 
-1. Open Safari and go to **https://notbhuvi.github.io/world-citizen/**
+1. Open Safari and go to **https://notbhuvi.github.io/moved-out/**
 2. Allow location access when prompted, to personalize the dashboard.
 3. Tap the **Share** icon in Safari's toolbar.
 4. Scroll down and tap **Add to Home Screen** → **Add**.
-5. Launch World Citizen from your Home Screen — it opens full-screen, no Safari UI, with its own icon.
+5. Launch Moved Out from your Home Screen — it opens full-screen, no Safari UI, with its own icon.
 
 This works over mobile data or any Wi-Fi. No computer needs to be running anything.
 
@@ -39,13 +39,13 @@ Your Mac and iPhone must be on the same Wi-Fi network.
    ```bash
    LAN_IP=$(ifconfig | grep "inet " | grep -v 127.0.0.1 | head -1 | awk '{print $2}')
    openssl req -x509 -newkey rsa:2048 -keyout certificates/localhost-key.pem \
-     -out certificates/localhost.pem -days 825 -nodes -subj "/CN=World Citizen Local" \
+     -out certificates/localhost.pem -days 825 -nodes -subj "/CN=Moved Out Local" \
      -addext "subjectAltName=DNS:localhost,IP:127.0.0.1,IP:$LAN_IP"
    ```
 3. Start the HTTPS LAN server: `npm run lan`
 4. On your iPhone, open `https://<your-mac-lan-ip>:3000` in Safari and accept the self-signed certificate warning once ("Show Details → visit this website").
 
-Note: this LAN build does **not** use the `/world-citizen` base path the production GitHub Pages build uses, so don't `Add to Home Screen` from the LAN URL — install from the real production URL above instead, to avoid having two different installed copies with different base paths.
+Note: this LAN build does **not** use the `/moved-out` base path the production GitHub Pages build uses, so don't `Add to Home Screen` from the LAN URL — install from the real production URL above instead, to avoid having two different installed copies with different base paths.
 
 ### Deploying changes
 

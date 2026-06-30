@@ -19,7 +19,7 @@ export default function AbroadCard({ location }: { location: LocationInfo | null
           <Globe2 size={16} className="text-accent" /> Set your home country
         </div>
         <p className="mb-3 mt-1 text-xs text-muted">
-          So World Citizen can tell you when you&apos;re traveling and surface the right currency, visa, and emergency info.
+          So Moved Out can tell you when you&apos;re traveling and surface the right currency, visa, and emergency info.
         </p>
         <select
           defaultValue=""

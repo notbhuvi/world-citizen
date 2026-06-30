@@ -20,6 +20,8 @@ export interface CacheRecord {
   updatedAt: number;
 }
 
+// Intentionally left as the original app name — IndexedDB databases are scoped per
+// origin, not per path, so renaming this would orphan existing local data for no reason.
 const DB_NAME = "world-citizen";
 const DB_VERSION = 1;
 

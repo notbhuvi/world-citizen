@@ -56,7 +56,7 @@ export default function MorePage() {
       )}
 
       <h1 className="mb-1 text-xl font-semibold">All Sections</h1>
-      <p className="mb-5 text-xs text-muted">Everything World Citizen covers, in one place.</p>
+      <p className="mb-5 text-xs text-muted">Everything Moved Out covers, in one place.</p>
       <div className="grid grid-cols-2 gap-3 pb-4">
         {SECTIONS.filter((s) => s.slug !== "").map((section) => (
           <Link key={section.slug} href={`/${section.slug}`} className="glass flex items-center gap-3 rounded-2xl p-3.5">

@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { getSetting, setSetting } from "@/lib/db";
+import { useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
 
@@ -10,24 +9,24 @@ export function useTheme() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const apply = (isDark: boolean) => {
+      const next: Theme = isDark ? "dark" : "light";
+      setTheme(next);
+      document.documentElement.setAttribute("data-theme", next);
+    };
+
     (async () => {
-      const stored = await getSetting<Theme | null>("theme", null);
-      const preferred =
-        stored ?? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-      setTheme(preferred);
-      document.documentElement.setAttribute("data-theme", preferred);
+      await Promise.resolve();
+      apply(media.matches);
       setReady(true);
     })();
+
+    const handleChange = (e: MediaQueryListEvent) => apply(e.matches);
+    media.addEventListener("change", handleChange);
+    return () => media.removeEventListener("change", handleChange);
   }, []);
 
-  const toggleTheme = useCallback(() => {
-    setTheme((prev) => {
-      const next = prev === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      setSetting("theme", next);
-      return next;
-    });
-  }, []);
-
-  return { theme, toggleTheme, ready };
+  return { theme, ready };
 }

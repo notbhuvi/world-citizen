@@ -1,10 +1,10 @@
-# World Citizen
+# Moved Out
 
-**Everything a person needs to know anywhere in the world.**
+**New place. New start. You belong.**
 
 A local-first Progressive Web App (PWA) that detects your location and surfaces weather, air quality, health, emergency, finance, travel, and civic information for wherever you are. No backend, no cloud account, no app store — install it on your iPhone via Safari → Add to Home Screen. The app does have its own login (see below), but it's entirely local: there's no server to log into, just a password lock for this device.
 
-**Live URL:** https://notbhuvi.github.io/world-citizen/
+**Live URL:** https://notbhuvi.github.io/moved-out/
 
 The app is statically hosted on GitHub Pages (free, just serves files — no server, no database) so it works over mobile data or any Wi-Fi without your computer running anything.
 
@@ -55,7 +55,7 @@ npm run dev          # http://localhost:3000
 
 ## Installing on your iPhone
 
-1. Open **https://notbhuvi.github.io/world-citizen/** in Safari on your iPhone.
+1. Open **https://notbhuvi.github.io/moved-out/** in Safari on your iPhone.
 2. Tap the **Share** icon → **Add to Home Screen** → **Add**.
 3. Launch it from your Home Screen. From then on it works over mobile data or any Wi-Fi, fully independent of any computer.
 

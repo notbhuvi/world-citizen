@@ -18,14 +18,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "World Citizen — Everything you need, anywhere",
-  description: "Everything a person needs to know anywhere in the world.",
+  title: "Moved Out — New place. New start. You belong.",
+  description: "New place. New start. You belong. Everything you need to know, anywhere in the world.",
   manifest: `${BASE_PATH}/manifest.webmanifest`,
-  applicationName: "World Citizen",
+  applicationName: "Moved Out",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "World Citizen",
+    title: "Moved Out",
   },
   icons: {
     icon: [
@@ -47,7 +47,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   viewportFit: "cover",
-  themeColor: "#0A84FF",
+  themeColor: "#08080C",
 };
 
 export default function RootLayout({

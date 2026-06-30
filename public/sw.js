@@ -1,9 +1,9 @@
-const CACHE_VERSION = "world-citizen-v2";
+const CACHE_VERSION = "moved-out-v1";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const API_CACHE = `${CACHE_VERSION}-api`;
 const TILE_CACHE = `${CACHE_VERSION}-tiles`;
 
-const BASE_PATH = "/world-citizen";
+const BASE_PATH = "/moved-out";
 const OFFLINE_URL = `${BASE_PATH}/offline/`;
 
 const ROUTE_SLUGS = [
@@ -63,7 +63,7 @@ self.addEventListener("activate", (event) => {
     caches
       .keys()
       .then((keys) =>
-        Promise.all(keys.filter((key) => key.startsWith("world-citizen-") && !keep.includes(key)).map((key) => caches.delete(key)))
+        Promise.all(keys.filter((key) => (key.startsWith("world-citizen-") || key.startsWith("moved-out-")) && !keep.includes(key)).map((key) => caches.delete(key)))
       )
       .then(() => self.clients.claim())
   );

@@ -2,7 +2,7 @@
 
 ## Overview
 
-World Citizen is a **client-only PWA**. There is no application server and no database server — every screen renders from data fetched directly from public, keyless APIs and from the device's own IndexedDB store. The only server-side component is GitHub Pages, which serves the static build files (HTML/CSS/JS) over a permanent HTTPS URL — it runs no application logic and stores no user data.
+Moved Out is a **client-only PWA**. There is no application server and no database server — every screen renders from data fetched directly from public, keyless APIs and from the device's own IndexedDB store. The only server-side component is GitHub Pages, which serves the static build files (HTML/CSS/JS) over a permanent HTTPS URL — it runs no application logic and stores no user data.
 
 ```
 ┌─────────────────────────────── iPhone (Safari / Home Screen PWA) ───────────────────────────────┐

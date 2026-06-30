@@ -1,1 +1,1 @@
-export const BASE_PATH = "/world-citizen";
+export const BASE_PATH = "/moved-out";

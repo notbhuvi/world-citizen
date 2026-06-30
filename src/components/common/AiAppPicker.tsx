@@ -44,7 +44,7 @@ export default function AiAppPicker({
                   </p>
                   <p className="text-xs text-muted">
                     {isFirstRun
-                      ? "World Citizen hands off research questions to it — pick the one you already have."
+                      ? "Moved Out hands off research questions to it — pick the one you already have."
                       : "Used for research lookups across the app."}
                   </p>
                 </div>

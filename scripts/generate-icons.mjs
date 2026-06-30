@@ -1,35 +1,40 @@
 import sharp from "sharp";
 import { mkdirSync, writeFileSync } from "fs";
 
+// "Moved Out" mark: two chevron strokes forming an M (blue -> purple gradient),
+// converging at a shared base point, with a faint winding road in the gap —
+// echoing "new place, new start" without needing fine detail at small sizes.
+const markPaths = `
+  <path d="M 120,380 L 120,150 L 256,290" stroke="url(#blue)" stroke-width="84" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M 392,380 L 392,150 L 256,290" stroke="url(#purple)" stroke-width="84" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M 256,300 C 240,340 270,360 250,400" stroke="white" stroke-opacity="0.35" stroke-width="8" stroke-linecap="round" fill="none"/>
+`;
+
+const gradients = `
+  <linearGradient id="blue" x1="120" y1="150" x2="256" y2="380" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#3B9DFF"/>
+    <stop offset="100%" stop-color="#1657D6"/>
+  </linearGradient>
+  <linearGradient id="purple" x1="392" y1="150" x2="256" y2="380" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#A35BFF"/>
+    <stop offset="100%" stop-color="#6B2FD9"/>
+  </linearGradient>
+`;
+
 const svg = `
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0A84FF"/>
-      <stop offset="100%" stop-color="#5E5CE6"/>
-    </linearGradient>
-  </defs>
-  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <circle cx="256" cy="256" r="156" fill="none" stroke="white" stroke-width="14" opacity="0.95"/>
-  <ellipse cx="256" cy="256" rx="156" ry="62" fill="none" stroke="white" stroke-width="10" opacity="0.85"/>
-  <ellipse cx="256" cy="256" rx="62" ry="156" fill="none" stroke="white" stroke-width="10" opacity="0.85"/>
-  <line x1="100" y1="256" x2="412" y2="256" stroke="white" stroke-width="10" opacity="0.85"/>
-  <line x1="256" y1="100" x2="256" y2="412" stroke="white" stroke-width="10" opacity="0.6"/>
+  <defs>${gradients}</defs>
+  <rect width="512" height="512" rx="112" fill="#08080C"/>
+  ${markPaths}
 </svg>`;
 
 const maskableSvg = `
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" fill="#0A84FF"/>
-  <defs>
-    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0A84FF"/>
-      <stop offset="100%" stop-color="#5E5CE6"/>
-    </linearGradient>
-  </defs>
-  <rect width="512" height="512" fill="url(#bg2)"/>
-  <circle cx="256" cy="256" r="120" fill="none" stroke="white" stroke-width="12" opacity="0.95"/>
-  <ellipse cx="256" cy="256" rx="120" ry="48" fill="none" stroke="white" stroke-width="9" opacity="0.85"/>
-  <ellipse cx="256" cy="256" rx="48" ry="120" fill="none" stroke="white" stroke-width="9" opacity="0.85"/>
+  <defs>${gradients}</defs>
+  <rect width="512" height="512" fill="#08080C"/>
+  <g transform="translate(256 256) scale(0.72) translate(-256 -256)">
+    ${markPaths}
+  </g>
 </svg>`;
 
 mkdirSync("public/icons", { recursive: true });
